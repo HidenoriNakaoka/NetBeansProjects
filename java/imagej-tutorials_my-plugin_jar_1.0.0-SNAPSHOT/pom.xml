@@ -13,10 +13,10 @@
 	</parent>
 
 	<groupId>imagej-tutorials</groupId>
-	<artifactId>swing-example</artifactId>
+	<artifactId>my-plugin</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
-	<name>Swing UI Command</name>
+	<name>my-plugin</name>
 	<description>This example shows how to use a swing GUI with imagej2.</description>
 	<url>https://github.com/[MY-ORG]/[MY-REPO]</url>
 	<inceptionYear>2016</inceptionYear>
