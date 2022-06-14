@@ -12,12 +12,12 @@
 		<relativePath />
 	</parent>
 
-	<groupId>pombe_mother_machine_analyzer</groupId>
-	<artifactId>pombe_mother_machine_analyzer</artifactId>
+	<groupId>pombe_analyzer</groupId>
+	<artifactId>pombe_analyzer</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
-	<name>pombe_mother_machine_analyzer</name>
-	<description>Analysis tool for S. pombe mother machine data.</description>
+	<name>pombe_analyzer</name>
+	<description>Analysis tool for S. pombe microscopy data.</description>
 	<url>https://github.com/HidenoriNakaoka/fiji_plugin</url>
 	<inceptionYear>2022</inceptionYear>
 	<organization>
