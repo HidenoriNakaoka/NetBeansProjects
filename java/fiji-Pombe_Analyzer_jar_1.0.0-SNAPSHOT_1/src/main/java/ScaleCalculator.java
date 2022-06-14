@@ -9,8 +9,8 @@
  */
 public class ScaleCalculator {
     // Private fields
-    final private int objective_;
-    final private int binning_;
+    final private double objective_;
+    final private double binning_;
     final private double aux_;
     final private double pxl_per_um_;
     final private double um_per_pxl_;
@@ -24,8 +24,8 @@ public class ScaleCalculator {
     
     // Constructor
     ScaleCalculator(int objective, int binning, boolean aux){
-        objective_ = objective;
-        binning_ = binning;
+        objective_ = (double)objective;
+        binning_ = (double)binning;
         if(aux){
             aux_ = 1.5;
         }else{
@@ -37,11 +37,11 @@ public class ScaleCalculator {
     }
     
     private double scale_pxl_per_um(){
-        return c1*objective_*(2/binning_)*aux_;
+        return c1*objective_*(2.0/binning_)*aux_;
     }
     
     private double scale_um_per_pxl(){
-        return 1/(c1*objective_*(2/binning_)*aux_);
+        return 1.0/(c1*objective_*(2.0/binning_)*aux_);
     }
     
     public double getScale_pxl_per_um(){

@@ -22,12 +22,11 @@ import ij.process.ImageProcessor;
 // 5. Size filter
 
 public class Binarizer {
-    private ImagePlus imp_;
+    final private ImagePlus imp_;
     private ImageProcessor ip_;
-    private double mode_;
+    final private double mode_;
     private double mode_subtraction_level_;
     private int mexicanhat_radious_;
-    private double scale_;//um/pxl (scale2)
 
     // Constructor
     public Binarizer(ImagePlus imp){
@@ -36,13 +35,12 @@ public class Binarizer {
         mode_ = imp_.getAllStatistics().mode;
     }
     
-    public Binarizer(ImagePlus imp, int mode_subtraction_level, int mexicanhat_radious, double scale){
+    public Binarizer(ImagePlus imp, int mode_subtraction_level, int mexicanhat_radious){
         imp_ = imp;
         ip_ = imp.getProcessor();
         mode_ = imp_.getAllStatistics().dmode;
         mode_subtraction_level_ = (double)mode_subtraction_level;
         mexicanhat_radious_ = mexicanhat_radious;
-        scale_ = scale;
     }
     
     public int getMode(){
@@ -70,12 +68,6 @@ public class Binarizer {
         ip_.add(-1*mode);
         ip_.multiply(255);
         imp_.setProcessor(ip_);  
-        //imp_.updateAndDraw();
-        //imp_.show();
-    }
-    
-    public void setImagePlus(ImagePlus imp){
-        imp_ = imp;
     }
     
     public ByteProcessor getImageProcessor(){

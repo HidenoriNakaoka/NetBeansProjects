@@ -1,12 +1,17 @@
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.Roi;
 import ij.io.DirectoryChooser;
 import ij.io.Opener;
+import ij.plugin.frame.RoiManager;
+import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.List;
+import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import org.scijava.command.Command;
@@ -82,6 +87,10 @@ public class JFrame extends javax.swing.JFrame implements Command {
         jLabel11 = new javax.swing.JLabel();
         mexicanhatslider = new javax.swing.JSlider();
         binarize = new javax.swing.JButton();
+        jSeparator1 = new javax.swing.JSeparator();
+        processall = new javax.swing.JButton();
+        progressbar = new javax.swing.JProgressBar();
+        progresslabel = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
 
         jLabel13.setText("jLabel13");
@@ -152,6 +161,7 @@ public class JFrame extends javax.swing.JFrame implements Command {
         jLabel3.setText("Binning:");
 
         binning.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "4" }));
+        binning.setSelectedIndex(1);
         binning.setToolTipText("");
         binning.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -283,6 +293,7 @@ public class JFrame extends javax.swing.JFrame implements Command {
         testimage.setText("Image to be tested");
 
         jLabel16.setText("mode:");
+        jLabel16.setToolTipText("Mode value of a test image");
 
         modeslider.setMajorTickSpacing(5);
         modeslider.setMaximum(10);
@@ -302,7 +313,8 @@ public class JFrame extends javax.swing.JFrame implements Command {
         modevalue.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         modevalue.setText("---");
 
-        jLabel10.setText("mode subtraction level:");
+        jLabel10.setText("Subtraction level:");
+        jLabel10.setToolTipText("Mode value of an image is used to determine the background intensity. [Background] = [Mode]*[1+level/10]");
 
         jLabel11.setText("Mexican Hat Radious:");
 
@@ -320,12 +332,25 @@ public class JFrame extends javax.swing.JFrame implements Command {
             }
         });
 
-        binarize.setText("Run Binarizer");
+        binarize.setText("Test Run");
+        binarize.setToolTipText("Run a binarizer for testing.");
         binarize.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 binarizeActionPerformed(evt);
             }
         });
+
+        processall.setText("Process All & Save");
+        processall.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                processallActionPerformed(evt);
+            }
+        });
+
+        progressbar.setToolTipText("");
+
+        progresslabel.setText("Processing ------ images out of ------");
+        progresslabel.setToolTipText("");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -334,13 +359,6 @@ public class JFrame extends javax.swing.JFrame implements Command {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addComponent(jLabel9)
-                        .addGap(18, 18, 18)
-                        .addComponent(keychannel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(customkey, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
@@ -348,26 +366,45 @@ public class JFrame extends javax.swing.JFrame implements Command {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel8))
                             .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addGap(6, 6, 6)
+                                        .addComponent(jLabel16)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(modevalue, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(binarize, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel10)
+                                    .addComponent(jLabel11))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(mexicanhatslider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(modeslider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGap(6, 6, 6)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(binarize, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                             .addComponent(testimage, javax.swing.GroupLayout.PREFERRED_SIZE, 547, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                                .addComponent(jLabel16)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(modevalue, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(18, 18, 18)
-                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(jLabel10)
-                                                    .addComponent(jLabel11))
-                                                .addGap(18, 18, 18)
-                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(mexicanhatslider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addComponent(modeslider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                        .addGap(0, 14, Short.MAX_VALUE)))))))
-                .addContainerGap())
+                                                .addComponent(progresslabel, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(processall)))
+                                        .addGap(0, 0, Short.MAX_VALUE))))))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(15, 15, 15)
+                        .addComponent(jLabel9)
+                        .addGap(18, 18, 18)
+                        .addComponent(keychannel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(customkey, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(20, 20, 20))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(progressbar, javax.swing.GroupLayout.PREFERRED_SIZE, 351, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -390,13 +427,24 @@ public class JFrame extends javax.swing.JFrame implements Command {
                         .addComponent(modevalue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel10))
                     .addComponent(modeslider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(26, 26, 26)
+                .addGap(21, 21, 21)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel11)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel11)
+                        .addComponent(binarize))
                     .addComponent(mexicanhatslider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(binarize)
-                .addContainerGap(58, Short.MAX_VALUE))
+                .addGap(23, 23, 23)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(progressbar, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(progresslabel))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addComponent(processall)))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Binarization", null, jPanel2, "");
@@ -620,9 +668,14 @@ public class JFrame extends javax.swing.JFrame implements Command {
         imp_dup.show();
         int mode_level = modeslider.getValue();
         int mexican_radious = mexicanhatslider.getValue();
-        double scale = Double.parseDouble(scale2.getText());
-        binarizer_ = new Binarizer(imp_dup, mode_level, mexican_radious, scale);
+        binarizer_ = new Binarizer(imp_dup, mode_level, mexican_radious);
         binarizer_.run();
+        
+        // Find Cells
+        CellFinder cf = new CellFinder(imp_dup, Double.parseDouble(scale2.getText()));
+        cf.run();
+        
+        // Update a binarized image
         imp_dup.updateAndDraw();
     }//GEN-LAST:event_binarizeActionPerformed
 
@@ -642,9 +695,11 @@ public class JFrame extends javax.swing.JFrame implements Command {
                 index_original = i;
             }
         }
-        binarizer_ = new Binarizer(ij.WindowManager.getImage(index_original).duplicate(), modeslider.getValue(), mexicanhatslider.getValue(), Double.parseDouble(scale2.getText()));
+        binarizer_ = new Binarizer(ij.WindowManager.getImage(index_original).duplicate(), modeslider.getValue(), mexicanhatslider.getValue());
         binarizer_.run();
         ij.WindowManager.getImage(index_bin).setProcessor(binarizer_.getImageProcessor());
+        CellFinder cf = new CellFinder(ij.WindowManager.getImage(index_bin), Double.parseDouble(scale2.getText()));
+        cf.run();
         ij.WindowManager.getImage(index_bin).updateAndDraw();
         
     }//GEN-LAST:event_mouseReleased
@@ -652,6 +707,73 @@ public class JFrame extends javax.swing.JFrame implements Command {
     private void mouseReleased2(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mouseReleased2
         mouseReleased(evt);
     }//GEN-LAST:event_mouseReleased2
+
+    private void processallActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_processallActionPerformed
+        
+        // Close all windows and create a file opener
+        ij.WindowManager.closeAllWindows();
+        Opener op = new Opener();
+        
+        // Process all images
+        int mode_level = modeslider.getValue();
+        int mexican_radious = mexicanhatslider.getValue();
+        String key = keychannel.getSelectedItem().toString();
+        double scale = Double.parseDouble(scale2.getText());
+        int max = getNumberOfKeyImages();
+        
+        // Make directories for saveing binarized images
+        for(int i=0; i<postable.getRowCount(); i++){
+            if(postable.getValueAt(i, 2).equals(true)){
+                String path = rootdirectory.getText()+postable.getValueAt(i, 0)+"/bin";
+                File bindir = new File(path);    
+                bindir.mkdir();
+            }
+        }
+        
+        // Swing worker
+        SwingWorker sw = new SwingWorker<Void, Integer>(){
+            @Override
+            protected Void doInBackground() throws Exception {
+                int processed = 0;
+                for(int i=0; i<postable.getRowCount(); i++){
+                    if(postable.getValueAt(i, 2).equals(true)){
+                        // Get image list
+                        File PosFolder = new File(rootdirectory.getText()+postable.getValueAt(i, 0));
+                        File[] all_list = PosFolder.listFiles();// This includes everything like Directories and hidden files.
+                        for(File f : all_list){
+                            if(f.getName().contains(key) && f.isFile() && !f.isHidden()){
+                                ImagePlus imp = op.openImage(f.getAbsolutePath());
+                                binarizer_ = new Binarizer(imp, mode_level, mexican_radious);
+                                binarizer_.run();
+                                // For unknown reasons, imp.show() is required here to reflect the changes
+                                // In order to avoid showing the images, roiManager was used
+                                CellFinder cf = new CellFinder(imp, scale);
+                                RoiManager rm = cf.run_with_roiManager();
+                                imp.getProcessor().multiply(0); // Erase everything, then re-fill using roiManager
+                                imp.updateAndDraw();
+                                IJ.setForegroundColor(255, 255, 255);
+                                rm.runCommand(imp,"Deselect");
+                                rm.runCommand(imp,"Fill");
+                                String path = rootdirectory.getText()+postable.getValueAt(i, 0)+"/bin";
+                                IJ.saveAs(imp, "Tiff", path+"/"+f.getName());
+                                processed++;
+                                publish(processed);
+                                Thread.sleep(100);
+                            }
+                        }
+                    }
+                }
+                return null;
+            }
+            @Override
+            protected void process(List<Integer> chunks) {
+                int i = chunks.get(chunks.size()-1);
+                progressbar.setValue(100*i/max); // The last value in this array is all we care about.
+                progresslabel.setText("Processing " + i + " of " + max);
+            }            
+        };
+        sw.execute();
+    }//GEN-LAST:event_processallActionPerformed
 
     /**
      * @param args the command line arguments
@@ -696,14 +818,30 @@ public class JFrame extends javax.swing.JFrame implements Command {
         new JFrame().setVisible(true);
     }
     
-    public void setScale(){
+    private void setScale(){
         int obj = Integer.parseInt(objective.getSelectedItem().toString());
         int bin = Integer.parseInt(binning.getSelectedItem().toString());
         boolean aux = aux_magnification.isSelected();
         
         ScaleCalculator sc = new ScaleCalculator(obj, bin, aux);
-        scale1.setText(String.format("%.3f", sc.getScale_um_per_pxl()));
-        scale2.setText(String.format("%.3f", sc.getScale_pxl_per_um()));
+        scale2.setText(String.format("%.3f", sc.getScale_um_per_pxl()));
+        scale1.setText(String.format("%.3f", sc.getScale_pxl_per_um()));
+    }
+    
+    private int getNumberOfKeyImages(){
+        int num = 0;
+        String key = keychannel.getSelectedItem().toString();
+        for(int i=0; i<postable.getRowCount(); i++){
+            if(postable.getValueAt(i, 2).equals(true)){
+                // Get image list
+                File PosFolder = new File(rootdirectory.getText()+postable.getValueAt(i, 0));
+                File[] all_list = PosFolder.listFiles();// This includes everything like Directories and hidden files.
+                for(File f : all_list){
+                    if(f.getName().contains(key) && f.isFile() && !f.isHidden()) num++;
+                }
+            }
+        }
+        return num;
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -732,6 +870,7 @@ public class JFrame extends javax.swing.JFrame implements Command {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JComboBox<String> keychannel;
     private javax.swing.JSlider mexicanhatslider;
@@ -740,6 +879,9 @@ public class JFrame extends javax.swing.JFrame implements Command {
     private javax.swing.JComboBox<String> objective;
     private javax.swing.JButton open;
     private javax.swing.JTable postable;
+    private javax.swing.JButton processall;
+    private javax.swing.JProgressBar progressbar;
+    private javax.swing.JLabel progresslabel;
     private javax.swing.JTextField rootdirectory;
     private javax.swing.JTextField scale1;
     private javax.swing.JTextField scale2;
