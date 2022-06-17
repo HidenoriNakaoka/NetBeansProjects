@@ -25,6 +25,8 @@ public class CellFinder implements PlugInFilter{
     ImagePlus imp_copy_;
     ByteProcessor bp_;
     ByteProcessor bp_copy_;
+    int image_width_;
+    int image_height_;
     
     // Theoretical typical cell area is 37.1 um^2, assuming that longitudal axis is 13 um and diameter is 3 um
     double scale_; // um/pxl, 1 um^2 = 1/scale_^2 pxl
@@ -39,6 +41,8 @@ public class CellFinder implements PlugInFilter{
         bp_ = (ByteProcessor)imp_.getProcessor();
         imp_copy_ = (ImagePlus)imp_.duplicate();
         bp_copy_ = (ByteProcessor)imp_copy_.getProcessor();
+        image_width_ =imp_.getWidth();
+        image_height_ = imp_.getHeight();
         scale_ = scale;
         TYPICALAREA = 37.1*(1/scale_/scale_);
         MINAREA = (int)(TYPICALAREA/10);
@@ -100,6 +104,14 @@ public class CellFinder implements PlugInFilter{
     
     private boolean isCell(Roi r){
         int pxls = r.getContainedPoints().length;
+        //System.out.println("X: "+r.getBounds().x);
+        //System.out.println("Y: "+r.getBounds().y);
+        //System.out.println("W: "+r.getBounds().width);
+        //System.out.println("H: "+r.getBounds().height);
+        if(r.getBounds().x==1) return false;
+        if(r.getBounds().y==1) return false;
+        if(r.getBounds().x + r.getBounds().width==image_width_) return false;
+        if(r.getBounds().y + r.getBounds().height==image_height_) return false;                       
         if(pxls>MINAREA && pxls<MAXAREA){
             //System.out.println("MAX:"+MAXAREA+",MIN:"+MINAREA+",CELL:"+pxls);
             return true;
