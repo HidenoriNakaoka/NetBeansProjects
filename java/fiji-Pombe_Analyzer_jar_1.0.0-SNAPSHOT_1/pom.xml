@@ -12,11 +12,11 @@
 		<relativePath />
 	</parent>
 
-	<groupId>pombe_analyzer</groupId>
-	<artifactId>pombe_analyzer</artifactId>
+	<groupId>imagej-tutorials</groupId>
+	<artifactId>Pombe_Analyzer</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
-	<name>pombe_analyzer</name>
+	<name>Pombe_Analyzer</name>
 	<description>Analysis tool for S. pombe microscopy data.</description>
 	<url>https://github.com/HidenoriNakaoka/fiji_plugin</url>
 	<inceptionYear>2022</inceptionYear>
@@ -35,7 +35,7 @@
 	<developers>
 		<developer>
 			<id>HidenoriNakaoka</id>
-			<name>[Hidenori Nakaoka</name>
+			<name>Hidenori Nakaoka</name>
 			<url></url>
 		</developer>
 	</developers>

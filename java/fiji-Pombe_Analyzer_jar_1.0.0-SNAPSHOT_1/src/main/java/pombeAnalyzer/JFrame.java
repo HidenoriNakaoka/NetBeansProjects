@@ -1,13 +1,13 @@
+package pombeAnalyzer;
 
 import ij.IJ;
 import ij.ImagePlus;
+import org.scijava.command.Command;
+import org.scijava.plugin.Plugin;
 import ij.gui.GenericDialog;
-import ij.gui.Roi;
 import ij.io.DirectoryChooser;
 import ij.io.Opener;
 import ij.plugin.frame.RoiManager;
-import ij.process.ByteProcessor;
-import ij.process.ImageProcessor;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
@@ -15,8 +15,7 @@ import java.util.List;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import org.scijava.command.Command;
-import org.scijava.plugin.Plugin;
+
 
 
 /*
@@ -28,8 +27,8 @@ import org.scijava.plugin.Plugin;
  *
  * @author nakaokahidenori
  */
-@Plugin(type = Command.class, headless = true,
-	menuPath = "MyPlugin>Pombe_Analyzer")
+
+@Plugin(type = Command.class, headless = true, menuPath = "MyPlugin>Pombe Analyzer")
 public class JFrame extends javax.swing.JFrame implements Command {
     
     // Private fields

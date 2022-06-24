@@ -1,3 +1,4 @@
+package pombeAnalyzer;
 
 import ij.ImagePlus;
 import ij.process.ByteProcessor;

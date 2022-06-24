@@ -1,3 +1,5 @@
+package pombeAnalyzer;
+
 import ij.plugin.filter.*;
 import ij.*;
 import ij.gui.*;
